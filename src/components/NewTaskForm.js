@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function NewTaskForm(props) {
+function NewTaskForm({ addTask }) {
   const [input, setInput] = useState('');
   const [min, setMin] = useState('');
   const [sec, setSec] = useState('');
@@ -8,7 +8,7 @@ function NewTaskForm(props) {
   const handlerEnter = (e) => {
     if (input.length !== 0) {
       if (e.code === 'Enter') {
-        props.addTask(input, min, sec);
+        addTask(input, min, sec);
         setInput('');
         setMin('');
         setSec('');

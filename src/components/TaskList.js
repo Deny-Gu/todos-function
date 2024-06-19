@@ -1,9 +1,9 @@
 import Task from './Task';
 
-function TaskList(props) {
+function TaskList({ tasks, filter, removeTask, editingTask, toogleCompleted, toogleEditing }) {
   return (
     <ul className="todo-list">
-      {props.tasks.map((task) => {
+      {tasks.map((task) => {
         return (
           <Task
             key={task.id}
@@ -12,10 +12,11 @@ function TaskList(props) {
             completed={task.completed}
             editing={task.editing}
             date={task.date}
-            removeTask={props.removeTask}
-            editingTask={props.editingTask}
-            toogleCompleted={props.toogleCompleted}
-            toogleEditing={props.toogleEditing}
+            filter={filter}
+            removeTask={removeTask}
+            editingTask={editingTask}
+            toogleCompleted={toogleCompleted}
+            toogleEditing={toogleEditing}
             min={task.min}
             sec={task.sec}
           />

@@ -26,79 +26,44 @@ function Todo() {
         },
       ];
     });
-    setId(id + 1);
-    setCountItem(countItem + 1);
+    setId((prevId) => prevId + 1);
+    setCountItem((prevCount) => prevCount + 1);
   };
 
   const removeTask = (id) => {
-    let remove = tasks.filter((task) => task.id !== id);
+    const remove = tasks.filter((task) => task.id !== id);
     setTasks(remove);
-    setCountItem(countItem - 1);
+    setCountItem((prevState) => prevState.countItem - 1);
   };
 
   const editingTask = (id, newLabel) => {
     if (!newLabel) {
       return;
     }
-    let editing = tasks.map((task) =>
+    const editing = tasks.map((task) =>
       task.id === id ? { ...task, label: newLabel, editing: false } : task
     );
     setTasks(editing);
   };
 
   const toogleCompleted = (id) => {
-    let completed = tasks.map((task) =>
+    const completed = tasks.map((task) =>
       task.id === id ? { ...task, completed: !task.completed } : task
     );
     setTasks(completed);
   };
 
   const toogleEditing = (id) => {
-    let editing = tasks.map((task) =>
+    const editing = tasks.map((task) =>
       task.id === id ? { ...task, editing: !task.editing } : task
     );
     setTasks(editing);
   };
 
   const removeCompletedTasks = () => {
-    let completedTasks = tasks.filter((task) => !task.completed);
+    const completedTasks = tasks.filter((task) => !task.completed);
     setTasks(completedTasks);
     setCountItem(completedTasks.length);
-  };
-
-  const toggleFilter = (target) => {
-    let tasks = document.querySelectorAll('.todo-list li');
-    let count = 0;
-    if (target === 'Completed') {
-      setFilter(target);
-      tasks.forEach((li) => {
-        if (li.className !== ' completed') {
-          li.style.display = 'none';
-        } else {
-          li.style.display = 'list-item';
-          count++;
-        }
-      });
-    }
-    if (target === 'Active') {
-      setFilter(target);
-      tasks.forEach((li) => {
-        if (li.className === ' completed') {
-          li.style.display = 'none';
-        } else {
-          li.style.display = 'list-item';
-          count++;
-        }
-      });
-    }
-    if (target === 'All') {
-      setFilter(target);
-      tasks.forEach((li) => {
-        li.style.display = 'list-item';
-        count++;
-      });
-    }
-    setCountItem(count);
   };
 
   return (
@@ -117,10 +82,12 @@ function Todo() {
           toogleEditing={toogleEditing}
         />
         <Footer
-          count={countItem}
+          tasks={tasks}
+          countItem={countItem}
+          setCountItem={setCountItem}
           removeCompletedTasks={removeCompletedTasks}
           filter={filter}
-          toggleFilter={toggleFilter}
+          setFilter={setFilter}
         />
       </section>
     </section>

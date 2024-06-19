@@ -1,17 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-function Task(props) {
-  const [input, setInput] = useState(props.label);
-  const [defaultInput, setDefaultInput] = useState(props.label);
-  const [minutes, setMinutes] = useState(props.min);
-  const [seconds, setSeconds] = useState(props.sec);
+function Task({
+  id,
+  label,
+  min,
+  sec,
+  completed,
+  editing,
+  date,
+  filter,
+  removeTask,
+  editingTask,
+  toogleCompleted,
+  toogleEditing,
+}) {
+  const [input, setInput] = useState(label);
+  const [defaultInput, setDefaultInput] = useState(label);
+  const [minutes, setMinutes] = useState(min);
+  const [seconds, setSeconds] = useState(sec);
   const [isRunning, setIsRunning] = useState(false);
 
-  useEffect(() => {
-    let interval = null;
+  const refInterval = useRef(null);
 
+  useEffect(() => {
     if (isRunning) {
-      interval = setInterval(() => {
+      refInterval.current = setInterval(() => {
         if (seconds === 59) {
           setMinutes(minutes + 1);
           setSeconds(0);
@@ -21,59 +34,72 @@ function Task(props) {
       }, 1000);
     }
 
-    return () => clearInterval(interval);
+    return () => clearInterval(refInterval.current);
   }, [isRunning, minutes, seconds]);
 
   const handlerKeyDown = (e) => {
     if (e.code === 'Enter') {
-      props.editingTask(props.id, input);
+      editingTask(id, input);
       setDefaultInput(input);
     }
     if (e.code === 'Escape') {
-      props.editingTask(props.id, defaultInput);
+      editingTask(id, defaultInput);
       setInput(defaultInput);
     }
   };
 
   const taskCompleted = () => {
-    props.toogleCompleted(props.id);
-    if (!props.completed) {
+    toogleCompleted(id);
+    if (!completed) {
       setIsRunning(false);
     }
   };
 
-  let classNames = '';
+  const style = {};
+  const classNames = [];
 
-  if (props.completed) {
-    classNames += ' completed';
+  if (completed && filter !== 'Completed') {
+    style.display = 'none';
   }
 
-  if (props.editing) {
-    classNames += ' editing';
+  if (!completed && filter === 'Completed') {
+    style.display = 'none';
+  }
+
+  if (filter === 'All') {
+    style.display = '';
+  }
+
+  if (completed) {
+    classNames.push('completed');
+  }
+
+  if (editing) {
+    classNames.push('editing');
   }
 
   return (
-    <li className={classNames}>
+    <li className={classNames.join(' ')} style={style}>
       <div className="view">
         <input
           className="toggle"
           type="checkbox"
-          defaultChecked={props.completed}
+          defaultChecked={completed}
           onClick={() => taskCompleted()}
         />
         <label>
-          <span className="title">{props.label}</span>
+          <span className="title">{label}</span>
           <span className="description">
             <button className="icon icon-play" onClick={() => setIsRunning(true)}></button>
             <button className="icon icon-pause" onClick={() => setIsRunning(false)}></button>
             <span className="timer">{`${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`}</span>
           </span>
-          <span className="description">{props.date}</span>
+          <span className="description">{date}</span>
         </label>
-        <button className="icon icon-edit" onClick={() => props.toogleEditing(props.id)}></button>
-        <button className="icon icon-destroy" onClick={() => props.removeTask(props.id)}></button>
+        <button className="icon icon-edit" onClick={() => toogleEditing(id)}></button>
+        <button className="icon icon-destroy" onClick={() => removeTask(id)}></button>
       </div>
-      {props.editing === true ? (
+      {editing === true ? (
         <input
           className="edit"
           type="text"
